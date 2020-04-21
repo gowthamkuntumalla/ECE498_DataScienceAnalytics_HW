@@ -64,6 +64,13 @@ class HMM(object):
         Alpha = np.zeros((T, self.n_states))
 
         # Your implementation here
+        # initialization
+        Alpha[0] = np.multiply(self.B[:,seq[0]],self.pi0)
+        Alpha[0] = Alpha[0]/ np.sum(Alpha[0])
+        # looping
+        for t in range(1,T):
+            Alpha[t] = np.multiply(self.B[:,seq[t]], (np.transpose(self.A) @ Alpha[t-1]))
+            Alpha[t] = Alpha[t]/ np.sum(Alpha[t])
                 
         return Alpha    
 
@@ -81,6 +88,12 @@ class HMM(object):
         Beta = np.zeros((T, self.n_states))
 
         # Your implementation here
+        # initialization
+        Beta[T-1] = np.ones((1,self.n_states))
+        
+        # looping
+        for t in range(T-1,0,-1):
+            Beta[t-1] = self.A @ np.multiply(self.B[:,seq[t]],Beta[t])
             
         return Beta
 
@@ -109,7 +122,14 @@ class HMM(object):
         Gamma = np.zeros((T, self.n_states))
         
         # Your implementation here
-
+        Gamma = np.multiply(Alpha,Beta) # Hadamard Product
+        
+        for i in range(T):
+            Gamma[i] = Gamma[i]/ np.sum(Gamma[i])
+#        print('Alpha Matrix')
+#        self.print_matrix(Alpha)
+#        print('Beta Matrix')
+#        self.print_matrix(Beta)
         return Gamma
 
         
